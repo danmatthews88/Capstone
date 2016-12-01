@@ -1,0 +1,35 @@
+#Population by city database
+dfcities = pd.read_csv('data/SUB-EST2015_ALL.csv',encoding='latin-1',usecols=['SUMLEV','NAME','STNAME','POPESTIMATE2011'])
+dfcities = dfcities[(dfcities.SUMLEV == 162) | (dfcities.SUMLEV == 170)]
+print(len(dfcities))
+# Dataframe that lists states and their abbreviations for mapping
+abbrev = pd.read_csv('data/states.csv').rename(columns={'State':'STNAME','Abbreviation':'provider_state'})
+
+dfcities = dfcities.merge(abbrev,on ='STNAME')
+dfcities = dfcities[['NAME','provider_state','POPESTIMATE2011']]
+dfcities = dfcities.rename(columns={'NAME':'provider_city','POPESTIMATE2011':'city_population2011'})
+
+#removes ' city' and ' town' from end of name
+dfcities.provider_city = dfcities.provider_city.map(lambda x: str(x)[:-5]).str.upper()
+
+dfcities['provider_city_state'] = dfcities.provider_city + ', ' +dfcities.provider_state
+dfcities = dfcities[['provider_city_state','city_population2011']]
+print(len(dfcities))
+dfcities.head()
+
+dfcities[(dfcities.NAME.map(lambda x: str(x)[-5:]) != ' town') & \
+         (dfcities.NAME.map(lambda x: str(x)[-5:]) != ' city') & \
+         (dfcities.NAME.map(lambda x: str(x)[-13:]) != ' municipality') & \
+         (dfcities.NAME.map(lambda x: str(x)[-8:]) != ' borough') & \
+         (dfcities.NAME.map(lambda x: str(x)[-8:]) != ' village')].reset_index()
+
+
+#Selects only unique providers and takes the mean of the fractional difference
+df_uniqprov = df.drop_duplicates(subset='provider_id')
+df_uniqprov = df_uniqprov.drop(['drg_id','drg_definition']+list(df.columns[9:14]),axis=1)
+
+fm = pd.DataFrame(df.groupby('provider_id',sort=False).frac_diff.mean()).reset_index()
+df_uniqprov = df_uniqprov.merge(fm,on='provider_id')
+
+df = df_uniqprov
+df.head()
