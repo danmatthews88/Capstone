@@ -1,0 +1,5 @@
+1. Analyze healthcare cost data nationwide using the IPPS Medicare cost data at data.gov. The costs for a given procedure vary wildly depending on location so I would like to look at how those costs vary by location and see if there are any patterns in the data.
+
+2. Analyze the dataset from the UCI Machine Learning Repository that shows hospital admissions over 10 years and look at factors in readmission rates for diabetes patients. I would look at things like the length of stay and what tests were performed in order to predict the readmission rate.
+
+3. Kaggle competition?
